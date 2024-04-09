@@ -1,0 +1,19 @@
+\documentclass{article} % use larger type; default would be 10pt
+\usepackage[utf8]{inputenc}
+\usepackage{aed2-diseno, aed2-symb,aed2-tad,aed2-tokenizer,caratula}
+
+
+\begin{document}
+
+\section{Ejercicio 1}
+
+Ejercicio 1
+
+\subsection{Subseccion 1}
+
+\section{Ejercicio2}
+\subsection{Requiere}
+Requiere: ($\forall$ \( x :  \mathbb{Z} \)) (\(0 \leq x < |\text{trayectorias}| \rightarrow _{L}\  (|\text{trayectorias}_{[x]}| = 1))  \land ( \text{trayectorias } = \text{ trayectorias}_{0}\))
+\subsection{Asegura}
+Asegura: ($\forall$ \( i :  \mathbb{Z} \)) (\(0 \leq i < |\text{eventos}| \land _{L}\ ((\exists  j :  \mathbb{Z} \)) (\(0 \leq j < |\text{pagos}| \rightarrow _{L}\ (\text{eventos}_{[i]} = \text{pagos}_{[j]})) \land ( \text{tasa} = (\text{eventos}_{[i]} \ast\ \text{apuestas}_{[i]})\))) \(\land\) \((\forall k : \mathbb{Z} \)) (\(0 \leq k < |\text{trayectorias}| \rightarrow _{L}\ (|\text{trayectorias}_{k}| = |\text{eventos}| + 1)\))
+\end{document}
