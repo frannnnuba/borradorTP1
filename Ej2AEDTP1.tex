@@ -8,17 +8,11 @@
 
 \begin{document}
 
-\section{Ejercicio 1}
-
-Ejercicio 1
-
-\subsection{Subseccion 1}
-
 \section{Ejercicio2}
 \subsection{Requiere}
 Requiere: ($\forall$ \(x :  \mathbb{Z} \)) (\(0 \leq x < |\text{trayectorias}| \rightarrow _{L}\  (|\text{trayectorias}_{[x]}| = 1))  \land ( \text{trayectorias } = \text{ trayectorias}_{0}\))
 \subsection{Asegura}
-Asegura: ($\forall$ \( i :  \mathbb{Z} \))(\(0 \leq i < |\text{eventos}| \rightarrow _{L}\ ((\exists  j :  \mathbb{Z} \)) (\(0 \leq j < |\text{pagos}| \land _{L}\ (\text{eventos}_{[i]} = \text{pagos}_{[j]})) \land ( \text{tasa} = \text{eventos}_{[i]} \ast\ \text{apuestas}_{[i]})\)) \(\land\) \((\forall k : \mathbb{Z} \)) (\(0 \leq k < |\text{trayectorias}| \rightarrow _{L}\ (|\text{trayectorias}_{[k]}| = |\text{eventos}| + 1)\) \(\land\) \((\forall m : \mathbb{Z} \)) (\(0 < m < |\text{trayectorias}_{[k]}| \rightarrow_{L}\ (\text{loGanado(trayectorias}_{[k][m]} , tasa) \land \text{ fondoComun(cooperan, loGanado)}) \land_{L} \text{fondoComunDividido(fondoComun,cooperan)} \land_{L} (\text{trayectorias}_{[k][m]} = \text{cuantoGana(} \text{cooperan}_{[k]} \text{, loGanado, fondoComunDividido)}) \land \text{trayectorias}_{[k][0]} = \text{trayectorias}_{0[k][0]}) \) 
+Asegura:($\forall$ \( i :  \mathbb{Z} \))(\(0 \leq i < |\text{eventos}| \rightarrow _{L}\ ((\exists  j :  \mathbb{Z} \)) (\(0 \leq j < |\text{pagos}| \land _{L}\ (\text{eventos}_{[i]} = \text{pagos}_{[j]}) \land ( \text{tasa} = \text{eventos}_{[i]} \ast\ \text{apuestas}_{[j]})\))) \(\land\) \((\forall k : \mathbb{Z} \)) (\(0 \leq k < |\text{trayectorias}| \rightarrow _{L}\ (|\text{trayectorias}_{[k]}| = |\text{eventos}| + 1)\) \(\land\) \((\forall m : \mathbb{Z} \)) (\(0 < m < |\text{trayectorias}_{[k]}| \rightarrow_{L}\ (\text{loGanado(trayectorias}_{[k][m]} , tasa) \land \text{ fondoComun(cooperan, loGanado)}) \land_{L} \text{fondoComunDividido(fondoComun,cooperan)} \land_{L} (\text{trayectorias}_{[k][m]} = \text{cuantoGana(} \text{cooperan}_{[k]} \text{, loGanado, fondoComunDividido)}) \land \text{trayectorias}_{[k][0]} = \text{trayectorias}_{0[k][0]}) \) 
 \\ \\
 $\textbf{aux loGanado} (\text{in m,n} : \mathbb{R}) : \mathbb{R} = (m \ast\ n)$ \\ \\
 $\textbf{aux fondoComun} (\text{in cooperan : seq} \langle Bool \rangle \text{, in n :} \mathbb{R}) : \mathbb{R} =$\\
