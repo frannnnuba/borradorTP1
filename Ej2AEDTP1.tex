@@ -1,27 +1,283 @@
-\documentclass[10pt, a4paper]{article} % use larger type; default would be 10pt
-\usepackage[utf8]{inputenc}
-\usepackage{aed2-diseno, aed2-symb,aed2-itef,aed2-tad,aed2-tokenizer,caratula}
+\documentclass[10pt,a4paper]{article}
 
-\author{Suarez Francisco}
-\date{22/04/2024}
-\title{TP AED2}
+\input{AEDmacros}
+\usepackage{caratula,aed2-diseno,aed2-symb,aed2-itef,aed2-tad,aed2-tokenizer,hyperref,enumitem}
+
+\titulo{Trabajo práctico 1:}
+\subtitulo{Especificación y WP}
+
+\fecha{\today}
+
+\materia{Algoritmos y Estructuras de Datos}
+\grupo{Grupo parenLosAlgoritmos}
+
+\integrante{Ballerio, Francisco}{986/23}{francisco.ballerio@hotmail.com}
+\integrante{Lopez, Gabriel}{615/23}{gabriellopezdu@gmail.com}
+\integrante{Suárez, Francisco}{104/23}{plottier2002@gmail.com}
+\integrante{Valesk, Benjamín}{004/01}{email4@dominio.com}
+
+\graphicspath{{../static/}}
 
 \begin{document}
 
-\section{Ejercicio2}
-\subsection{Requiere}
-Requiere: ($\forall$ \(x :  \mathbb{Z} \)) (\(0 \leq x < |\text{trayectorias}| \rightarrow _{L}\  (|\text{trayectorias}_{[x]}| = 1))  \land ( \text{trayectorias } = \text{ trayectorias}_{0}\))
-\subsection{Asegura}
-Asegura:($\forall$ \( i :  \mathbb{Z} \))(\(0 \leq i < |\text{eventos}| \rightarrow _{L}\ ((\exists  j :  \mathbb{Z} \)) (\(0 \leq j < |\text{pagos}| \land _{L}\ (\text{eventos}_{[i]} = \text{pagos}_{[j]}) \land ( \text{tasa} = \text{eventos}_{[i]} \ast\ \text{apuestas}_{[j]})\))) \(\land\) \((\forall k : \mathbb{Z} \)) (\(0 \leq k < |\text{trayectorias}| \rightarrow _{L}\ (|\text{trayectorias}_{[k]}| = |\text{eventos}| + 1)\) \(\land\) \((\forall m : \mathbb{Z} \)) (\(0 < m < |\text{trayectorias}_{[k]}| \rightarrow_{L}\ (\text{loGanado(trayectorias}_{[k][m]} , tasa) \land \text{ fondoComun(cooperan, loGanado)}) \land_{L} \text{fondoComunDividido(fondoComun,cooperan)} \land_{L} (\text{trayectorias}_{[k][m]} = \text{cuantoGana(} \text{cooperan}_{[k]} \text{, loGanado, fondoComunDividido)}) \land \text{trayectorias}_{[k][0]} = \text{trayectorias}_{0[k][0]}) \) 
-\\ \\
-$\textbf{aux loGanado} (\text{in m,n} : \mathbb{R}) : \mathbb{R} = (m \ast\ n)$ \\ \\
-$\textbf{aux fondoComun} (\text{in cooperan : seq} \langle Bool \rangle \text{, in n :} \mathbb{R}) : \mathbb{R} =$\\
-$\sum_{j=0}^{|cooperan|-1} \text{( if} \text{ cooperan}_{[j]} \text{= true then n else 0 fi)}$ 
-\\ \\
-$\textbf{aux fondoComunDividido} (\text{in fondoComun : }	\mathbb{R}	\text{, in cooperan : seq} \langle Bool \rangle)  : \mathbb{R} = $\\
-$ \text{fondoComun div} |\text{cooperan}|$
-\\ \\
-$\textbf{aux cuantoGana} (\text{in coopera: Bool, in loGanado, fondoComunDividido: }  \mathbb{R}) : \mathbb{R} =$ \\
-$\text{if coopera = true then fondoComunDividido else (loGanado + fondoComunDividido}$
+\maketitle
+
+%Underfull \hbox (badness 10000) es normal. El ejemplo también lo tiene.
+
+\section{Especificación}
+
+%Hay un error con \res, \In, \Inout y \Out (alredy defined). En el modelo de ejemplo, el único proc que hay, tiene un tipo de salida, y no provoca "\res alredy defined", pero acá es inout, y no corresponde tipar la salida. Los otros tres tampoco generan el error en el ejemplo.
+\subsection{redistribucionDeLosFrutos}
+
+\begin{proc}{redistribuciónDeLosFrutos}{\In recursos : \TLista{\float}, \In cooperan : \TLista{{Bool}}}{\TLista{\float}}
+  \requiere{(|{recursos}| = |{cooperan}|) \wedge (0 \leq |{recursos}|)} 
+  \asegura{ res = s \wedge |{recursos}| = |{s}| \yLuego \\ (\forall i: \ent)(0 \leq i < |{s}| \implicaLuego \phantomsection s[i] = coopero(recursos[i], cooperan[i]) + correspondeACadaUno(recursos, cooperan) }
+
+\end{proc}\vspace{0.3cm}
+\aux{coopero}{\In recursos[i] : \float, \In cooperan[i] : {Bool}, \In i : \ent}{\float}
+{\\ (\IfThenElse{cooperan[i] = true}{0}{recursos[i]})}
+\vspace{0.3cm}
+\aux{correspondeACadaUno}{\In recursos: \TLista{\float}, \In cooperan: \TLista{{Bool}}}{\float}
+{\\ \sum_{k = 0}^{|{recursos}| - 1} (\IfThenElse{cooperan[i]}{recursos[i]}{0})}
+
+\subsection{trayectoriaDeLosFrutosIndividualesALargoPlazo}
+
+\begin{proc}{trayectoriaDeLosFrutosIndividualesALargoPlazo}{\Inout trayectorias: \TLista{\TLista{\float}}, \In cooperan:\TLista{Bool}, \In apuestas: \TLista{\TLista{\float}}, \In pagos: \TLista{\TLista{\float}}, \In eventos: \TLista{\TLista{\ent}}}{}
+\vspace{0.3cm}
+  %\res alredy defined
+  \requiere{(trayectorias = trayectorias_0) \wedge \phantom{a} |trayectorias| = |cooperan| = |apuestas| = |pagos| = |eventos| \wedge \paraTodo[unalinea]{i}{\ent}{0 \leq i < |pagos| \implicaLuego {\paraTodo[unalinea]{k}{\ent}{0 \leq k < |eventos_{[i]}| \implicaLuego{eventos_{[i][k]} >0}}} \phantom{a} \wedge \\{\paraTodo[unalinea]{j}{\ent}{0 \leq j < |pagos_{[i]}| \implicaLuego{|pagos_{[i]}|= |apuestas[i]| \wedge pagos_{[i][j]} >0 \wedge apuestas_{[i][j]} >0 \wedge\\ trayectorias_{[i][0]} >0}}}} \wedge sumatoriaApuestas(apuestas)}
+\vspace{0.3cm}  
+  \asegura{|tractorias| = |trayectorias_{[0]}| \phantom{a} \wedge \phantom{a} longFinal (trayectorias, eventos) \phantom{a} \wedge \phantom{a} \\ elPrimeroSeMantiene \phantom{a} (trayectorias, trayectorias_0) \phantom{a} \wedge \\ esTrayectoriaMod \phantom{a} (trayectorias, apuestas, pagos, eventos, cooperan)}
+
+\end{proc}\vspace{0.3cm}
+
+\pred{longFinal}{trayectorias: \TLista{\TLista{\float}}, eventos: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i}{\ent}{0 \leq i < |trayectorias| \implicaLuego trayectorias[i] = |eventos|+1}}
+
+\vspace{0.3cm}
+
+\pred{elPrimeroSeMantiene}{trayectorias:\TLista{\TLista{\float}}, trayectorias\textsubscript0: \TLista{\float}}{\paraTodo[unalinea]{i}{\ent}{0 \leq i < |trayectorias| \implicaLuego (trayectoria[i][0] = trayectorias\textsubscript0[i][0]}}
+
+\vspace{0.3cm}
+
+\pred{esTrayectoriaMod}{trayectorias: \TLista{\TLista{\float}}, apuestas: \TLista{\TLista{\float}}, pagos: \TLista{\TLista{\float}}, eventos \TLista{\TLista{\ent}}, \\ cooperan: \TLista{Bool}}{
+\paraTodo[unalinea]{i}{\ent}{0 \leq i < |pagos| \implicaLuego \existe[unalinea]{k}{\ent}{0 \leq k < |pagos[i]| \yLuego \\
+\paraTodo[unalinea]{j}{\ent}{1 \leq j < |trayectorias[i]| \implicaLuego \\ 
+  \phantom{.} trayectorias[i][j] = decideGanancia (cooperan[i], fondoCom\Acute{u}nDividido(cooperan_{[i]}, loGanado(trayectorias[i][j-1],\\ tasa(apuestas[i][k],pagos[i][k])), loGanado(trayectorias[i][j-1],tasa(apuestas[i][k],pagos[i][k]))}}}}
+
+\vspace{0.3cm}
+
+\aux{decideGanancia}{\In cooperan: {Bool}, fondoComúnDiv: , loGanado}{\float}
+{\\\IfThenElse{coopera = true}{fondoCom\Acute{u}nDiv}{(loGanado+fondC\Acute{u}nDiv)}}
+
+\vspace{0.3cm}
+
+\aux{fondoComúnDiv}{\In cooperan: \TLista{Bool}, \In contribución : \float}{\float}{\\ \sum^{|cooperan|-1}_{_j=0}(\IfThenElse{cooperan[j] = true}{contribuci\Acute{o}n}{0}) \phantom{.} / \phantom{.} |cooperan|}
+
+\vspace{0.3cm}
+\aux{tasa}{\In apuesta: \float,pago: \float}{\float}{apuesta*pago}
+
+\vspace{0.3cm}
+
+\aux{loGanado}{\In recurso:  \float, n: \float}
+{\float} {recurso * n}
+
+\vspace{0.3cm}
+
+\pred{sumatoriaApuestas}{apuestas: \TLista{\TLista{\float}}}{\paraTodo[unalinea]{i}{\ent}{0 \leq i < |apuestas| \implicaLuego (\sum^{|apuestas[i]|-1}_{k=0} apuestas[i][k])=1}}
+
+\subsection{trayectoriaExtrañaEscalera}
+
+\begin{proc}{trayectoriaEscaleraExtraña}{\In trayectoria: \TLista{\float}}{Bool}
+  %\res alredy definded
+  \requiere{|trayectoria| > 0}
+  \asegura{res = \True \phantom{a} \leftrightarrow \phantom{a}{m\Acute{a} ximoRecursoPrimero(trayectoria)} \phantom{a} \vee \phantom{a} {m\Acute{a}ximoRecurso\Acute{U}ltimo(trayectoria)} \phantom{a} \vee \\ \phantom{a} {m\Acute{a}ximoRecursoIntermedio(trayectoria)}}
+  %Para usar tildes dentro del proc, se usa \acute{letra a tildar}. Para poner en nombres de pred, se usa \'
+
+\end{proc}\vspace{0.3cm}
+
+\pred{m\'aximoRecursoPrimero}{trayectoria: \TLista{\float}}
+{\paraTodo[unalinea]{i}{\ent}{(0 < i < |S| - 1) \implicaLuego (S[i] \leq S[i+1])\phantom{a} \yLuego\phantom{a} (S[0] < S[1])}}
+
+\pred{m\'aximoRecurso\'Ultimo}{trayectoria: \TLista{\float}}
+{\paraTodo[unalinea]{j}{\ent}{(0 < j < |S| - 1) \implicaLuego (S[j-1] \leq S[j])\phantom{a} \yLuego\phantom{a} (S[|S| - 1] < S[|S| - 2])}}
+
+\pred{m\'aximoRecursoIntermedio}{trayectoria :\TLista{\float}}
+{\paraTodo[unalinea]{k}{\ent}{\neg \existe[unalinea]{l}{\ent}{(0 < k < |S-1|\phantom{a} \wedge\phantom{a} 0 < l < |S-1|\phantom{a} \wedge\phantom{a} k\neq l)\phantom{a} \yLuego \phantom{a} (S[k-1] < S[k] > S[k+1])\phantom{a} \yLuego \\ (S[l-1] < S[l] > S[l+1])}}}
+
+\subsection{individuoDecideSiCooperarONo}
+\begin{proc} {individuoDecideSiCooperarONo}{\In individuo : {\ent}, \In recursos {\float}, \Inout cooperan: \TLista{Bool}, \In apuestas: \TLista{\TLista{\float}}, \In pagos: \TLista{\TLista{\float}}, \In eventos: \TLista{\TLista{\ent}}}
+{}
+\vspace{0.3cm}
+  \requiere{(cooperan = cooperan_0) \phantom{a} \wedge \phantom{a} |recursos| = |cooperan| = |apuestas| = |pagos| = |eventos| \phantom{a} \wedge \phantom{a} 0 \leq n < |cooperan| \phantom{a} \wedge 
+  \paraTodo[unalinea]{i}{\ent}{0 \leq i < |pagos| \implicaLuego (|pagos[i]|) = |apuestas[i]|\phantom{a} \wedge \phantom{a} recursos [i]>0 \phantom{a} \wedge \\ \paraTodo[unalinea]{j}{\ent}{0 \leq j < |pagos| \implicaLuego \paraTodo[unalinea]{j}{\ent}{0 \leq j < |pagos[i]| \implicaLuego (pagos[i][j]>0 \phantom{a} \wedge \phantom{a} apuestas[i][j]>0}) \phantom{a} \wedge \\ sumatoriaApuestas(apuestas)}}}
+  
+  \asegura{\existe[unalinea]{S}{\TLista{\TLista{\float}}}{recursosDelInicio(recursos,S) \phantom{a} \wedge \\ longFinal(S,eventos) \phantom{a} \wedge \\ tasaGanancia(pagos,apuestas,eventos) \phantom{a} \wedge \\ gananciaIndividual(S,pagos,apuestas,eventos) \phantom{a} \wedge \\ esTrayMod(S,apuestas,pagos,eventos,cooperan) \phantom{a} \wedge \\ \existe[unalinea]{A}{\TLista{\TLista{\float}}}{recursosDelInicio(recursos,A) \phantom{a} \wedge \\ longFinal(A,eventos) \phantom{a} \wedge \\ tasaGanancia(pagos,apuestas,eventos) \phantom{a} \wedge \\ gananciaIndividal(A,pagos,apuestas,eventos) \phantom{a} \wedge \\ fondoCom\Acute{u}nV\Acute{a}lido(A,apuestas,pagos,cooperanConContrario(cooperan,n),eventos)\phantom{a} \wedge \\ esTrayMod(A,apuestas,pagos,eventos,cooperanConContrario(cooperan,n)) \phantom{a} \wedge \\ (S[n][|S[n]|-1] \geq A[n][|s|-1] \rightarrow cooperan=cooperan_0) \phantom{a} \wedge \\ A[n][|s|-1]>S[n][|s|-1] \rightarrow cooperan=cooperanConContrario(cooperan,n)}}}
+
+\end{proc}\vspace{0.3cm}\vspace{0.3cm}
+
+\pred{recursosDelInicio}{recursos: \TLista{\TLista{\float}}, S: \TLista{\TLista{\float}}}{\paraTodo[unalinea]{i}{\ent}{0 \leq i < |recursos| \yLuego (S{i][0] = recursos[i])}}}
+\\
+\aux{cooperanConContrario}{C: \TLista{Bool}, S: \float}{\TLista{Bool}}{\\ \IfThenElse{C[n] = true}{\\concat(concat(subseq(C,0,n),[false]),subseq(C,n+1,|c|))}{\\concat(concat(subseq(C,0,n),[true]),subseq(C,n+1,|c|))}}
+
+\subsection{individuoActualizaApuesta}
+\begin{proc}{individuoActualizaApuesta}{\In individuo : {\ent},\In recursos \TLista{\float},\In cooperan:\TLista{Bool}, \Inout apuestas: \TLista{\TLista{\float}}, \In pagos: \TLista{\TLista{\float}}, \In eventos: \TLista{\TLista{\ent}}}
+{}
+\vspace{0.3cm}
+  %\res alredy defined
+  \requiere{ sumatoriaApuestas(apuestas) \wedge (apuestas = apuestas_0) \wedge \phantom{a} |recursos| = |cooperan| = |apuestas| = |pagos| = |eventos| \wedge \paraTodo[unalinea]{i}{\ent}{0 \leq i < |pagos| \implicaLuego {\paraTodo[unalinea]{k}{\ent}{0 \leq k < |eventos_{[i]}| \implicaLuego{eventos_{[i][k]} >0}}} \phantom{a} \wedge \\{\paraTodo[unalinea]{j}{\ent}{0 \leq j < |pagos_{[i]}| \implicaLuego{|pagos_{[i]}|= |apuestas[i]| \wedge pagos_{[i][j]} >0 \wedge apuestas_{[i][j]} >0 \wedge\\ recursos_{[i]} >0}}}}}
+\vspace{0.3cm}   
+  \asegura{|apuestas| = |apuestas_{[0]}| \phantom{a} \wedge \phantom{a}soloCambiaIndividuo(individuo,apuestas,apuestas_0) \phantom{a} \wedge \phantom{a}\\ \paraTodo[unalinea]{ trayCom}{\TLista{\TLista{\float}}}{esTrayectoriaMod(trayCom,apuestas,pagos,eventos,cooperan) \phantom{a} \wedge \\ recursoInicial(trayCom,recursos) \phantom{a} \wedge \phantom{a} longFinal(trayCom,eventos) \implica \\ \existe[unalinea]{trayMax,apuestasMax}{\TLista{\TLista{\float}}}{sumatoriaApuestas(apuestasMax) \wedge\\esTrayectoriaMod(trayMax,apuestasMax,pagos,eventos,cooperan) \phantom{a}  \wedge \\ recursoInicial(trayMax,recursos) \phantom{a}  \wedge longFinal(trayMax,eventos) \yLuego \\ (trayMax[individuo][|trayMax|-1] \geq trayCom[individuo][|trayCom|-1]) \implica\\ apuestas[indivduo] = apuestaMax[individuo]}}
+  }
+\end{proc}\vspace{0.3cm}
+
+\pred{recursoInicial}{\In trayectoria : \TLista{\TLista{\float}}, \In recursos : \TLista{\float}}
+{\paraTodo[unalinea]{i}{\ent}{0 \leq i < |trayectoria| \implicaLuego (trayectoria[i][0] = recursos[i])}}
+
+\pred{soloCambiaIndiviuo}{\In apuestas: \TLista{\TLista{\float}}, \In $apuestas_0$: \TLista{\TLista{\float}}, \In inividuo: \ent}{\paraTodo[unalinea]{i}{\ent}{0 \leq i < |apuestas| \implica ((i \neq inividuo \phantom{.} \wedge \phantom{.} apuestas[i] = apuestas_0{i}}}
+
+\vspace{0.3cm}
+
+\section{Demostraciones de correctitud}
+
+En este punto del trabajo vamos a probar que la especificaci\'on de la funci\'on frutoDelTrabajoPuramenteIndividual es correcta respecto de su implementaci\'on. \\
+Probamos la correctitud del programa de la siguiente manera: \\ \\
+S1 \equiv res = recurso \\
+S2 \equiv i = 0 \\
+S3 \equiv \text{while $(i<|eventos|)$ do } (\IfThenElse{eventos[i]}{res = (res*apuesta.c)*pago.c}{res = (res*apuesta.s)*pago.s} \text{) i = i + 1} \\ \text{endwhile}
+\\
+Q \equiv res = recurso * (apuesta.c * pago.c)^{#apariciones(eventos,T)} * (apuesta.s * pago.s)^{#apariciones(eventos,t)} \\
+\\
+$wp(S1, S2, S3, Q) \equiv_{axioma 3} wp(S1, wp(S2, wp(S3, Q)))$\\
+$wp(S3, Q) \equiv_{axioma 5}$ \text{Por este axioma sabemos que no se puede hacer wp de un ciclo, pues quedamos encerrados en un} \\ \text{bucle infinito.}\\
+\text{Por eso usamos el teorema de la invariante para probar la correctitud del ciclo y que este termina.}\\
+\text{Entonces decimos que si existe un predicado I que cumple con:}
+\begin{itemize}
+    \item[1] {Pc \implica \text{ I} \text{ (Precondici\'on del ciclo implica a la invariante)}}
+    \item[2] {${I \wedge B \{S\} I}$ \text{ (Durante cualquier momento del ciclo la invariante sigue valiendo)}}
+    \item[3] {{$I \wedge \neg B \implica Q_c$} \text{ (Se cumple la postcondici\'on al salir del ciclo}}
+    \item[4] {{$(I \wedge B \wedge V_0 = f_{v} )\{S\} (f_v < V_0)$} \text{(fv es estrictamente decreciente)}}
+    \item[5] {$(I \wedge fv \leq 0) \implica \neg B$} \text{(Si fv alcanza la cota inferior, la guarda (B) no se cumple)}
+    
+\end{itemize}
+
+Los puntos 1,2 y 3 demuestran la correctitud del ciclo. Mientras que los puntos 4 y 5 demuestran, mediante una funcion variante, que el ciclo termina. \\
+Ahora definimos: \\
+$Pc \equiv (res = recurso \wedge i = 0)$ \\
+$Qc \equiv Q \equiv res = recurso((apuesta_c * pago_c)^{\#(eventos), t)} * (apuestas_s * pago_s)^{\#(eventos, f)})\\
+B \equiv (i < |\text{eventos}|)$ \\
+$I \equiv (0 \leq i \leq |eventos| \wedge \\ res = recurso((apuesta_c * pago_c)^{\#(subseq(eventos,0,i), t)} * (apuestas_s * pago_s)^{\#(subseq(eventos,0,i), f)})$ \\
+${fv \equiv |eventos| - i}$ \\
+
+\begin{itemize}[leftmargin=*]
+    \item [1] {Pc \implica \text{ I}}\vspace{0.3cm}\\
+$res = recurso \phantom{.} \wedge \phantom{.} i = 0 \phantom{.} \wedge \phantom{.} apuesta_c + apuesta_s = 1 \phantom{.} \wedge paco_c > 0 \phantom{.} \wedge \phantom{.} pago_s > 0 \phantom{.} \wedge \phantom{.} apuesta_c > 0 \phantom{.} \wedge \phantom{.} apuesta_s > 0 \phantom{.} \wedge recurso > 0)$ \\
+Todo esto es PC. Voy a asignarlo a \textbf{PC} para facilitar la lectura
+
+\textbf{PC}$ \implica res = recurso((apuesta_c * pago_c)^{\#(subseq(eventos,0,i), t)} * (apuestas_s * pago_s)^{\#(subseq(eventos,0,i), f)})$
+
+Por $i = 0$
+
+\textbf{PC}$ \implica res = recurso((apuesta_c * pago_c)^{\#(subseq(eventos,0,0), t)} * (apuestas_s * pago_s)^{\#(subseq(eventos,0,0), f)})$
+
+\text{Como $subseq(lista,0,0) = subseq(\{\})$}
+
+\textbf{PC}$ \implica res = recurso((apuesta_c * pago_c)^{\#(subseq(\{\}), t)} * (apuestas_s * pago_s)^{\#(subseq(\{\}), f)})$
+
+\textbf{PC}$ \implica res = recurso((apuesta_c * pago_c)^{0} * (apuestas_s * pago_s)^{0})$
+
+\textbf{PC}$ \implica res = recurso(((apuesta_c)^{0} * (pago_c)^{0}) * ((apuestas_s)^{0} * (pago_s)^{0}))$
+
+Desarmo \textbf{PC} para que se vea claramente
+
+$res = recurso \phantom{.} \wedge \phantom{.} i = 0 \phantom{.} \wedge \phantom{.} apuesta_c + apuesta_s = 1 \phantom{.} \wedge paco_c > 0 \phantom{.} \wedge \phantom{.} pago_s > 0 \phantom{.} \wedge \phantom{.} apuesta_c > 0 \phantom{.} \wedge \phantom{.} apuesta_s > 0 \phantom{.} \wedge recurso > 0) \implica res = recurso((1)(1) * (1)(1))$
+
+$res = recurso \phantom{.} \wedge \phantom{.} i = 0 \phantom{.} \wedge \phantom{.} apuesta_c + apuesta_s = 1 \phantom{.} \wedge paco_c > 0 \phantom{.} \wedge \phantom{.} pago_s > 0 \phantom{.} \wedge \phantom{.} apuesta_c > 0 \phantom{.} \wedge \phantom{.} apuesta_s > 0 \phantom{.} \wedge recurso > 0) \implica res = recurso$
+
+Luego, es cierto que $Pc \implica \text{ I}$
+
+    \item [2] ${I \wedge B \phantom{a} \{S\} \phantom{a} I}$\vspace{0.3cm} \\
+    
+$(0 \leq i \leq |eventos| \phantom{.} \wedge \phantom{.} res = recurso((apuesta_c * pago_c)^{\#(subseq(eventos,0,i), t)} * (apuestas_s * pago_s)^{\#(subseq(eventos,0,i), f)}) \\ \wedge \phantom{.} i < |eventos|\\ 
+\\ \{\text{while $(i<|eventos|)$ do } (\IfThenElse{eventos[i]}{res = (res*apuesta.c)*pago.c}{res = (res*apuesta.s)*pago.s} \text{) i = i + 1} \\ \text{endwhile}\} \\
+\\ (0 \leq i \leq |eventos| \phantom{.} \wedge \phantom{.} res = recurso((apuesta_c * pago_c)^{\#(subseq(eventos,0,i), t)} * (apuestas_s * pago_s)^{\#(subseq(eventos,0,i), f)})$ \\ \\
+$i = 1 \longrightarrow (0 \leq 1 \leq |eventos| \phantom{.} \wedge \phantom{.} res = recurso((apuesta_c * pago_c)^{\#(subseq(eventos,0,1), t)} * (apuestas_s * pago_s)^{\#(subseq(eventos,0,1), f)}) \\
+i = 2 \longrightarrow (0 \leq 2 \leq |eventos| \phantom{.} \wedge \phantom{.} res = recurso((apuesta_c * pago_c)^{\#(subseq(eventos,0,2), t)} * (apuestas_s * pago_s)^{\#(subseq(eventos,0,2), f)}) \\
+i = 3 \longrightarrow (0 \leq 3 \leq |eventos| \phantom{.} \wedge \phantom{.} res = recurso((apuesta_c * pago_c)^{\#(subseq(eventos,0,3), t)} * (apuestas_s * pago_s)^{\#(subseq(eventos,0,3), f)}) \\ 
+i = |eventos| - 1 \longrightarrow (0 \leq |eventos| - 1 \leq |eventos| \phantom{.} \wedge \phantom{.} res = recurso((apuesta_c * pago_c)^{\#(subseq(eventos,0,|eventos - 1|), t)} * (apuestas_s * pago_s)^{\#(subseq(eventos,0,|eventos| - 1), f)})$
+\\ Queda probado que a medida que itera el ciclo, y hasta el \'ultimo valor de i tal que cumple B, la invariante sigue valiendo.
+
+
+
+\text{}
+
+    \item [3] $I \wedge \neg B \implica Q_c$\vspace{0.3cm}
+
+$\neg B \implica \neg (i < |eventos|) \implica (i \geq |eventos|)$ \text{; entonces, usando que $\wedge$ es conmutativa:}
+
+$(i \geq |eventos|) \phantom{.} \wedge \phantom{.} 0 \phantom{.} \wedge \leq i \leq |eventos| \phantom{.} \wedge \\ res = recurso((apuesta_c * pago_c)^{\#(subseq(eventos,0,i), t)} * (apuestas_s * pago_s)^{\#(subseq(eventos,0,i), f)}) \implica Q_c$
+\vspace{0.3cm}\\
+$\equiv i = |eventos| \phantom{.} \wedge \\ res = recurso((apuesta_c * pago_c)^{\#(subseq(eventos,0,i), t)} * (apuestas_s * pago_s)^{\#(subseq(eventos,0,i), f)} \implica Q_c$
+\vspace{0.3cm}\\
+$\equiv res = recurso((apuesta_c * pago_c)^{\#(subseq(eventos,0,|eventos|), t)} * (apuestas_s * pago_s)^{\#(subseq(eventos,0,|eventos|), f)}) \phantom{.} \wedge \\ (i \geq |eventos|) \implica Q_c$\\
+\\Pero la subsecuencia de eventos que va desde el 0 hasta la longitud de eventos ($(subseq(eventos,0,|eventos|$) es, en realidad, la secuencia eventos original, entonces queda:\\
+\\
+$\equiv res = recurso((apuesta_c * pago_c)^{\#(eventos), t)} * (apuestas_s * pago_s)^{\#(eventos, f)})\\ \implica res = recurso((apuesta_c * pago_c)^{\#(eventos), t)} * (apuestas_s * pago_s)^{\#(eventos, f)})$
+
+Así, queda probado que I $\wedge \neg B \implica Q_c$
+
+    \item[4]$((I \wedge B) \wedge (V_0 = f_{v}))\{S\} (f_v < V_0)$
+\vspace{0.3cm}
+${fv \equiv |eventos| - i}$
+
+$S \equiv $\phantom{.}if $elementos[i]$ then\\
+\tab \tab$res = (res * apuestas_c)*pago_c$\\
+\tab else\\
+\tab \tab$res = (res * apuestas_s)*pago_s$\\
+\tab endif\\
+$i = i+1$
+
+Para probar este punto, hago la wp entre \{S\} y ($f_v<V_0)$.
+
+$WP(S, F_v < V_0)$ \\ $\equiv WP(\IfThenElse{eventos[i]}{res = (res*apuestas_s)*pago_s}{res = (res*apuestas_c)*Pago_c}; \phantom{a} i = i + 1, (|eventos| - i) < V_0$
+\\Por axioma 3;\\
+$\equiv WP(\IfThenElse{eventos[i]}{res = (res*apuestas_s)*pago_s}{res = (res*apuestas_c)*Pago_c}, WP(i = i+1, |eventos| - i < V_0)$
+\vspace{0.3cm}\\
+Por un lado, hago $WP(i = i+1, |eventos| - i < V_0)$
+\vspace{0.3cm}\\
+$WP(i = i+1, |eventos| - i < V_0)$\tab \tab por axioma 1;\\
+$\equiv def(i+1) \yLuego (|eventos| - (i+1) < V_0)$\\
+$\equiv |eventos| - i - 1 < V_0$\\
+$\equiv |eventos| - i \leq V_0$\\
+\vspace{0.3cm} Ahora vuelvo a la WP original.\\
+$WP(\IfThenElse{eventos[i]}{res = ((res*apuestas_s)*pago_s}{res = (res*apuestas_c)*Pago_c}, \phantom{a} |eventos - i \leq V_0)$\\
+Por Axioma 4;\\
+$\equiv def (eventos[i]) \yLuego (eventos [i] \phantom{.} \wedge \phantom{.} WP ((res = (rs*apuestas_c)*pago_c), |eventos| - i > V_0) \\ \tab \tab \tab \tab\vee (\neg (eventos[i] \phantom{.} \wedge \phantom{.} WP((res = (res*apuestas_s)*pagos_s), |eventos| - i > V_0)$
+\vspace{0,3cm}\\ Como $WP ((res = (rs*apuestas_c)*pago_c), |eventos| - i > V_0)$ no tiene nada en común entre \{S\} y Q, entonces la ejecución del programa (en este caso, $\IfThenElse{eventos[i]}{res = (res*apuestas_s)*pago_s}{res = (res*apuestas_c)*Pago_c}$) no se relaciona con la postcondición. Es decir, se podría interpretar a \{S\} como skip. Lo mismo ocurre con $WP((res = (res*apuestas_s)*pagos_s), |eventos| - i > V_0)$ Así;\vspace{0.3cm} \\
+$\equiv 0 \leq i < |eventos| \yLuego (eventos[i] \phantom{.} \wedge \phantom{.} WP(skip, |eventos| - i \leq V_0) \phantom{.} \vee \phantom{.} (\neg(eventos[i] \wedge WP(skip, |eventos| -i \leq V_0)$\\
+$\equiv 0 \leq i < |eventos| \yLuego (eventos[i] \phantom{.} \wedge \phantom{.} |eventos| - i \leq V_0) \phantom{.} \vee \phantom{.} (\neg(eventos[i] \wedge |eventos| -i \leq V_0)$\\
+$\equiv 0 \leq i < |eventos| \yLuego |eventos| - i \leq V_0$\\
+
+Ahora, tomamos $(I \wedge B) \phantom{.} \wedge \phantom{.} (V_0 = f_{v})$:
+
+$(0 \leq i \leq |eventos| \wedge \\ res = recurso((apuesta_c * pago_c)^{\#(subseq(eventos,0,i), t)} * (apuestas_s * pago_s)^{\#(subseq(eventos,0,i), f)}) \phantom{.} \wedge \phantom{.} i < |eventos| \phantom{.} \wedge \phantom{.} V_0 = |eventos| - i$\\
+
+Y se puede ver que la implica, por lo que la wp entre \{S\} y ($f_v<V_0)$ demuestra que fv es estrictamente decreciente en el cuerpo del ciclo.
+
+\item[5] $(I \wedge fv \leq 0) \implica \neg B$ \\ \vspace{0.3cm}
+
+$(0 \leq i \leq |eventos| \wedge res = recurso((apuesta_c * pago_c)^{\#(subseq(eventos,0,i), t)} * (apuestas_s * pago_s)^{\#(subseq(eventos,0,i), f)}) \phantom{.} \wedge \phantom{.} |eventos| - i \leq 0) \implica (\neg (i < |eventos|)$\vspace{0.3cm}\\
+$\equiv(0 \leq i \leq |eventos| \wedge res = recurso((apuesta_c * pago_c)^{\#(subseq(eventos,0,i), t)} * (apuestas_s * pago_s)^{\#(subseq(eventos,0,i), f)}) \phantom{.} \wedge \phantom{.} (|eventos| \leq i)) \implica (i \leq |eventos|)$\vspace{0.3cm}\\
+$\equiv(res = recurso((apuesta_c * pago_c)^{\#(subseq(eventos,0,i), t)} * (apuestas_s * pago_s)^{\#(subseq(eventos,0,i), f)}) \phantom{.} \wedge \\ \phantom{.} (|eventos| = i)) \implica (i \leq |eventos|)$ \vspace{0.3cm}\\
+
+\tab Se puede ver en la última implicación es verdadera, demostrando así que al llegar fv a la cota inferior, la guarda deja de cumplirse.\\
+
+\tab Queda así demostrada la correctitud y la finitud del ciclo. Como el programa termina junto con el ciclo, queda también demostrada la correctitud la especificación del programa respecto a su implementación.
+
+\vspace{0.3cm}
+
+\end{itemize}
+
+
+
 
 \end{document}
